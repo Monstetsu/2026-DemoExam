@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Учусь.РФ — портал курсов</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 20px; background: #e9ecef; }
+        .wrapper { max-width: 1100px; margin: 0 auto; background: #fff; border-radius: 16px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1, h2, h3 { margin-top: 0; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; border-bottom: 2px solid #dee2e6; padding-bottom: 12px; margin-bottom: 20px; }
+        .course-badges { display: flex; gap: 12px; }
+        .badge { background: #f8f9fa; padding: 5px 12px; border-radius: 30px; font-size: 13px; border: 1px solid #dee2e6; }
+        .nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 25px; background: #f1f3f5; padding: 10px; border-radius: 40px; }
+        .nav button { background: transparent; border: none; padding: 8px 20px; cursor: pointer; border-radius: 30px; font-weight: 500; }
+        .nav button.active { background: #0d6efd; color: white; }
+        .page { display: none; }
+        .form-group { margin-bottom: 14px; }
+        label { font-weight: 600; display: inline-block; width: 180px; }
+        input, select, textarea { padding: 8px 12px; border: 1px solid #ced4da; border-radius: 20px; width: 260px; }
+        button { background: #0d6efd; color: white; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; margin-top: 6px; }
+        button:hover { background: #0b5ed7; }
+        .error { color: #dc3545; font-size: 14px; margin: 8px 0; }
+        .success { color: #198754; }
+        .app-card { background: #f8f9fa; border-radius: 16px; padding: 12px 16px; margin-bottom: 12px; border-left: 5px solid #ffc107; }
+        .status { font-weight: bold; }
+        hr { margin: 20px 0; }
+        table { width: 100%; border-collapse: collapse; background: #fefefe; }
+        th, td { border: 1px solid #adb5bd; padding: 6px; font-size: 13px; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <div class="top-bar">
+        <div><h1>📖 Учусь.РФ</h1><p>Курсы повышения квалификации и переподготовки</p></div>
+        <div class="course-badges">
+            <span class="badge">🎓 КПК</span>
+            <span class="badge">⚠️ Охрана труда</span>
+            <span class="badge">👩‍🏫 Педагогам</span>
+        </div>
+    </div>
+
+    <div class="nav">
+        <button class="nav-btn" data-page="login">🔐 Вход</button>
+        <button class="nav-btn" data-page="register">📝 Регистрация</button>
+        <button class="nav-btn" data-page="cabinet">👤 Кабинет</button>
+        <button class="nav-btn" data-page="order">📋 Заявка</button>
+        <button class="nav-btn" data-page="admin">⚙ Админ</button>
+    </div>
+
+    <div id="login" class="page">
+        <h3>Вход в систему</h3>
+        <div id="loginMsg"></div>
+        <div class="form-group"><label>Логин:</label> <input id="loginName" type="text"></div>
+        <div class="form-group"><label>Пароль:</label> <input id="loginPwd" type="password"></div>
+        <button onclick="doLogin()">Войти</button>
+    </div>
+
+    <div id="register" class="page">
+        <h3>Регистрация</h3>
+        <div id="regMsg"></div>
+        <div class="form-group"><label>Логин (лат/цифры >=6):</label> <input id="regLogin"></div>
+        <div class="form-group"><label>Пароль (>=8):</label> <input id="regPass" type="password"></div>
+        <div class="form-group"><label>ФИО:</label> <input id="regFio"></div>
+        <div class="form-group"><label>Телефон:</label> <input id="regPhone"></div>
+        <div class="form-group"><label>Email:</label> <input id="regEmail"></div>
+        <button onclick="doRegister()">Зарегистрироваться</button>
+    </div>
+
+    <div id="cabinet" class="page">
+        <h3>Личный кабинет</h3>
+        <div id="userInfo" style="background:#e9ecef; padding:12px; border-radius:16px;"></div>
+        <h4>📌 Мои заявки</h4>
+        <div id="myApps"></div>
+        <hr>
+        <h4>✍️ Оставить отзыв (для завершённых)</h4>
+        <select id="reviewSelect" style="width:300px;"></select><br><br>
+        <textarea id="reviewText" rows="2" cols="50" placeholder="Отзыв о курсе..."></textarea><br>
+        <button onclick="submitReview()">Отправить отзыв</button>
+        <h4>💬 Мои отзывы</h4>
+        <div id="myReviews"></div>
+    </div>
+
+    <div id="order" class="page">
+        <h3>Оформление заявки на курс</h3>
+        <div id="orderMsg"></div>
+        <div class="form-group"><label>Выберите курс:</label>
+            <select id="courseSelect" style="width:320px;">
+                <option>Курсы повышения квалификации для педагогов</option>
+                <option>Охрана труда для руководителей и специалистов</option>
+                <option>Курсы переподготовки (Информационные системы)</option>
+                <option>Пожарно-технический минимум (72 часа)</option>
+                <option>Дистанционное обучение: Педагогика</option>
+                <option>Безопасность дорожного движения</option>
+            </select>
+        </div>
+        <div class="form-group"><label>Дата старта:</label> <input type="date" id="dateStart"></div>
+        <div class="form-group"><label>Способ оплаты:</label>
+            <select id="paymentMethod"><option>Безналичный расчет</option><option>Банковская карта</option><option>Оплата по счету</option></select>
+        </div>
+        <button onclick="createOrder()">Отправить заявку</button>
+    </div>
+
+    <div id="admin" class="page">
+        <h3>Администрирование</h3>
+        <div id="adminAuthBlock">
+            <div class="form-group"><label>Логин админа:</label> <input id="adminUser"></div>
+            <div class="form-group"><label>Пароль:</label> <input id="adminPass" type="password"></div>
+            <button onclick="adminLogin()">Войти</button>
+        </div>
+        <div id="adminData" style="display:none; margin-top:20px;">
+            <h4>Управление заявками</h4>
+            <div id="allApps"></div>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px; border-top: 1px solid #dee2e6; padding: 15px; background: #f1f3f5; border-radius: 12px;">
+        <h4>📊 ER-диаграмма (схема БД)</h4>
+        <table>
+            <tr><th>Таблица</th><th>Поля</th><th>Тип связи</th></tr>
+            <tr><td>users</td><td>id, login, password, fio, phone, email</td><td>1 : N → applications</td></tr>
+            <tr><td>applications</td><td>id, userLogin(FK), course, dateStart, payment, status</td><td>N : 1 → users</td></tr>
+            <tr><td>reviews</td><td>id, userLogin(FK), course, text, created</td><td>N : 1 → users</td></tr>
+        </table>
+        <p style="font-size:12px; margin-top:8px;">Статусы заявок: Новая → Идет обучение → Обучение завершено</p>
+    </div>
+</div>
+
+<script>
+    let users = JSON.parse(localStorage.getItem('portal_users')) || [];
+    let apps = JSON.parse(localStorage.getItem('portal_apps')) || [];
+    let reviews = JSON.parse(localStorage.getItem('portal_reviews')) || [];
+
+    function save() { localStorage.setItem('portal_users', JSON.stringify(users)); localStorage.setItem('portal_apps', JSON.stringify(apps)); localStorage.setItem('portal_reviews', JSON.stringify(reviews)); }
+    if(users.length === 0) { users.push({ login: 'demo', password: 'demo1234', fio: 'Демо Пользователь', phone: '+70000000000', email: 'demo@mail.ru' }); apps.push({ id: 1, userLogin: 'demo', course: 'Охрана труда для руководителей', dateStart: '2026-06-01', payment: 'Безналичный расчет', status: 'Новая' }); apps.push({ id: 2, userLogin: 'demo', course: 'Курсы для педагогов', dateStart: '2026-05-01', payment: 'Карта', status: 'Обучение завершено' }); save(); }
+    let curr = sessionStorage.getItem('portal_user');
+
+    function getCurr() { return curr ? users.find(u => u.login === curr) : null; }
+
+    function renderCab() {
+        let u = getCurr();
+        if(!u) return;
+        document.getElementById('userInfo').innerHTML = `<strong>${u.fio}</strong> (${u.login})<br>📞 ${u.phone} | 📧 ${u.email}`;
+        let my = apps.filter(a => a.userLogin === u.login);
+        let html = '';
+        for(let a of my) { let cls = a.status==='Новая'?'status-new':(a.status==='Идет обучение'?'status-learning':'status-completed'); html += `<div class="app-card"><b>${a.course}</b><br>📅 ${a.dateStart} | 💳 ${a.payment}<br>Статус: <span class="status ${cls}">${a.status}</span></div>`; }
+        document.getElementById('myApps').innerHTML = html || '<p>Нет заявок</p>';
+        let completed = my.filter(a => a.status === 'Обучение завершено');
+        let sel = document.getElementById('reviewSelect');
+        sel.innerHTML = '<option value="">-- выберите курс --</option>';
+        for(let c of completed) sel.innerHTML += `<option value="${c.id}">${c.course}</option>`;
+        let revs = reviews.filter(r => r.userLogin === u.login);
+        let revHtml = '';
+        for(let r of revs) revHtml += `<div class="app-card"><b>${r.course}</b><br>${r.text}</div>`;
+        document.getElementById('myReviews').innerHTML = revHtml || '<p>Нет отзывов</p>';
+    }
+
+    window.doLogin = function() { let l=document.getElementById('loginName').value.trim(), p=document.getElementById('loginPwd').value.trim(), u=users.find(u=>u.login===l && u.password===p); if(u){ curr=l; sessionStorage.setItem('portal_user',l); document.getElementById('loginMsg').innerHTML='<span class="success">✅ Успешно</span>'; setTimeout(()=>{ showPage('cabinet'); renderCab(); },500); } else document.getElementById('loginMsg').innerHTML='<span class="error">❌ Неверный логин/пароль</span>'; };
+    window.doRegister = function() { let l=document.getElementById('regLogin').value.trim(), p=document.getElementById('regPass').value.trim(), f=document.getElementById('regFio').value.trim(), ph=document.getElementById('regPhone').value.trim(), e=document.getElementById('regEmail').value.trim(), m=document.getElementById('regMsg'); if(!l||!p||!f||!ph||!e){ m.innerHTML='<span class="error">Заполните все поля</span>'; return; } if(!/^[a-zA-Z0-9]{6,}$/.test(l)){ m.innerHTML='<span class="error">Логин: латиница/цифры, мин 6</span>'; return; } if(p.length<8){ m.innerHTML='<span class="error">Пароль мин 8 символов</span>'; return; } if(users.find(u=>u.login===l)){ m.innerHTML='<span class="error">Логин занят</span>'; return; } users.push({login:l,password:p,fio:f,phone:ph,email:e}); save(); m.innerHTML='<span class="success">Регистрация успешна! Войдите.</span>'; setTimeout(()=>showPage('login'),1200); };
+    window.createOrder = function() { let u=getCurr(); if(!u){ document.getElementById('orderMsg').innerHTML='<span class="error">Войдите в аккаунт</span>'; return; } let c=document.getElementById('courseSelect').value, d=document.getElementById('dateStart').value, pay=document.getElementById('paymentMethod').value; if(!d){ document.getElementById('orderMsg').innerHTML='<span class="error">Выберите дату</span>'; return; } apps.push({id:Date.now(),userLogin:u.login,course:c,dateStart:d,payment:pay,status:'Новая'}); save(); document.getElementById('orderMsg').innerHTML='<span class="success">Заявка отправлена!</span>'; setTimeout(()=>showPage('cabinet'),1000); };
+    window.submitReview = function() { let u=getCurr(); if(!u) return; let aid=document.getElementById('reviewSelect').value, txt=document.getElementById('reviewText').value.trim(); if(!aid||!txt){ alert('Выберите курс и напишите отзыв'); return; } let app=apps.find(a=>a.id==aid); if(!app||app.status!=='Обучение завершено'){ alert('Только для завершённых курсов'); return; } reviews.push({userLogin:u.login,course:app.course,text:txt,date:new Date()}); save(); document.getElementById('reviewText').value=''; renderCab(); alert('Отзыв добавлен'); };
+    window.adminLogin = function() { let al=document.getElementById('adminUser').value, ap=document.getElementById('adminPass').value; if(al==='Admin26' && ap==='Demo20'){ document.getElementById('adminAuthBlock').style.display='none'; document.getElementById('adminData').style.display='block'; let all=''; for(let a of apps){ all+=`<div class="app-card"><b>Заявка #${a.id}</b> (${a.userLogin})<br>${a.course} | ${a.dateStart} | ${a.payment}<br>Статус: ${a.status}<br><button onclick="changeStat(${a.id},'Новая')">Новая</button> <button onclick="changeStat(${a.id},'Идет обучение')">Обучение</button> <button onclick="changeStat(${a.id},'Обучение завершено')">Завершено</button></div>`; } document.getElementById('allApps').innerHTML=all; } else alert('Неверный логин или пароль админа'); };
+    window.changeStat = function(id, st) { let app=apps.find(a=>a.id===id); if(app){ app.status=st; save(); adminLogin(); if(getCurr()) renderCab(); } };
+    function showPage(p) { document.querySelectorAll('.page').forEach(el=>el.style.display='none'); document.getElementById(p).style.display='block'; document.querySelectorAll('.nav button').forEach(btn=>btn.classList.remove('active')); let act=document.querySelector(`.nav button[data-page="${p}"]`); if(act) act.classList.add('active'); if(p==='cabinet' && getCurr()) renderCab(); if(p==='cabinet' && !getCurr()){ alert('Войдите'); showPage('login'); } if(p==='order' && !getCurr()){ alert('Войдите'); showPage('login'); } }
+    document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>showPage(btn.getAttribute('data-page'))));
+    showPage('login');
+</script>
+</body>
+</html>
